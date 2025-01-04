@@ -102,35 +102,4 @@ function main() {
     app.listen(80)
 }
 
-// main()
-
-(async () => {
-    // const axiosControlPlane= axios.create({
-    //     baseURL: `http://${host}:${port}${prefix}`,
-    //     headers: {
-    //         token, username
-    //     }
-    // })
-    // const config = JSON.parse((await axiosControlPlane.post('/plugin/config', {
-    //     name: pluginName,
-    //     config_key: 'hosts'
-    // })).data.data.config_value)
-    // console.log(config)
-
-    const promise = new Promise((resolve, reject) => {
-        fs.readFile('src/help', 'utf8', (err, data) => {
-            if (err) {
-                reject(err)
-            } else {
-                resolve(data)
-            }
-        })
-    })
-
-    // promise.then(res => {
-    //     console.log(res)
-    // })
-
-
-    console.log(await promise)
-})().then()
+main()
