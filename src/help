@@ -1,0 +1,6 @@
+PVE指令帮助:
+1. getPVEList: 获取所有受管理的PVE列表
+2. getNodes [PVE]: 获取指定PVE下的Node
+3. getVMs [PVE] [Node]: 获取指定PVE、指定Node下的所有VM
+
+
