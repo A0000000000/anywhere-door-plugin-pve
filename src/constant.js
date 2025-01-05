@@ -9,6 +9,7 @@ const PARAMS_DATA = 'data'
 
 const PLUGIN_NAME = 'plugin_name'
 const AUTHORIZATION = 'Authorization'
+const PVE_API_PREFIX = '/api2/json'
 
 const ERROR_CODE_SUCCESS = 0
 const ERROR_CODE_NOT_THIS_PLUGIN = -1
@@ -29,6 +30,7 @@ export default {
     EVENT_DATA,
     PARAMS_NAME,
     AUTHORIZATION,
+    PVE_API_PREFIX,
     PARAMS_TARGET,
     PARAMS_DATA,
     PLUGIN_NAME,

@@ -19,10 +19,58 @@ AnywhereDoor Plugin PVE实现
 
 ### Docker Command Line
 1. 运行容器
+   * `docker run --name anywhere-door-plugin-pve -itd -p 8085:80 -e HOST=ip -e PORT=port -e USERNAME=username -e TOKEN=token -e PLUGIN_NAME=pve --restart=always 192.168.25.5:31100/maoyanluo/anywhere-door-plugin-pve:1.0`
 
 ### Kubernetes
 ```yaml
-
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: anywhere-door-plugin-pve-deployment
+  namespace: anywhere-door
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: anywhere-door-plugin-pve
+  template:
+    metadata:
+      labels:
+        app: anywhere-door-plugin-pve
+    spec:
+      containers:
+      - name: anywhere-door-plugin-pve
+        image: 192.168.25.5:31100/maoyanluo/anywhere-door-plugin-pve:1.0
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: HOST
+          value: "anywhere-door-control-plane-service.anywhere-door"
+        - name: PORT
+          value: "80"
+        - name: USERNAME
+          value: username
+        - name: TOKEN
+          value: token
+        - name: PLUGIN_NAME
+          value: "pve"
+        ports:
+        - containerPort: 80
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: anywhere-door-plugin-pve-service
+  namespace: anywhere-door
+  labels:
+    app: anywhere-door-plugin-pve
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: 80
+  selector:
+    app: anywhere-door-plugin-pve
 ```
 
 1. 保证容器正常运行
