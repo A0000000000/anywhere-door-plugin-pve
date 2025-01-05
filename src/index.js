@@ -40,9 +40,9 @@ async function processCommand(axiosControlPlane, raw, extend) {
         }
         switch (method) {
             case 'getPVEList':
-                let machineList = '机器列表:'
+                let machineList = '集群列表:'
                 for (const i in configs) {
-                    machineList = machineList + '\n' + `第${Number(i) + 1}台机器: ${configs[i].name}`
+                    machineList = machineList + '\n' + `第${Number(i) + 1}个集群: ${configs[i].name}`
                 }
                 return machineList
             case 'getNodes':
@@ -53,7 +53,7 @@ async function processCommand(axiosControlPlane, raw, extend) {
                     return cmdConstant.RESULT_NO_SUCH_PVE
                 }
                 const nodesData = (await axiosPVE[cmds[1]].get('/nodes')).data.data
-                let nodeListInfo= `机器${cmds[1]}下Node:\n`
+                let nodeListInfo= `集群${cmds[1]}下节点:\n`
                 for (const i in nodesData) {
                     nodeListInfo = nodeListInfo + '\n' + `第${Number(i) + 1}个节点: ${nodesData[i].node}`
                 }
@@ -70,7 +70,7 @@ async function processCommand(axiosControlPlane, raw, extend) {
                 for (const i in nodesData) {
                     const nodeData = nodesData[i]
                     if (nodeData.node === cmds[2]) {
-                        return `机器${cmds[1]}节点${cmds[2]}信息:\n`
+                        return `集群${cmds[1]}节点${cmds[2]}信息:\n`
                             + `节点名: ${nodeData.node}\n`
                             + `CPU核心数: ${nodeData.maxcpu}\n`
                             + `CPU使用率: ${(nodeData.cpu * 100).toFixed(2)}%\n`
@@ -85,7 +85,7 @@ async function processCommand(axiosControlPlane, raw, extend) {
                 */
                 const nodeInfo = (await axiosPVE[cmds[1]].get(`/nodes/${cmds[2]}/status`)).data.data
                 if (nodeInfo) {
-                    return `机器${cmds[1]}节点${cmds[2]}信息:\n`
+                    return `集群${cmds[1]}节点${cmds[2]}信息:\n`
                         + `CPU: ${nodeInfo.cpuinfo.model} ${nodeInfo.cpuinfo.cores}核${nodeInfo.cpuinfo.cpus}线程 ${(nodeInfo.cpuinfo.mhz / 1024).toFixed(2)}GHz\n`
                         + `内存: 总共${(nodeInfo.memory.total / 1024 / 1024 / 1024).toFixed(2)}GB 已用${(nodeInfo.memory.used / 1024 / 1024 / 1024).toFixed(2)}GB 可用${(nodeInfo.memory.free / 1024 / 1024 / 1024).toFixed(2)}GB\n`
                         + `交换分区: 总共${(nodeInfo.swap.total / 1024 / 1024 / 1024).toFixed(2)}GB 已用${(nodeInfo.swap.used / 1024 / 1024 / 1024).toFixed(2)}GB 可用${(nodeInfo.swap.free / 1024 / 1024 / 1024).toFixed(2)}GB\n`
@@ -103,7 +103,7 @@ async function processCommand(axiosControlPlane, raw, extend) {
                     return cmdConstant.RESULT_NO_SUCH_PVE
                 }
                 const vmList = (await axiosPVE[cmds[1]].get(`/nodes/${cmds[2]}/qemu`)).data.data
-                let vmListInfo = `机器${cmds[1]}节点${cmds[2]}下虚拟机:\n`
+                let vmListInfo = `集群${cmds[1]}节点${cmds[2]}下虚拟机:\n`
                 for (const i in vmList) {
                     const vm = vmList[i]
                     vmListInfo = vmListInfo + `第${Number(i) + 1}台虚拟机: \n  名字: ${vm.name} \n  ID: ${vm.vmid}\n`
@@ -117,7 +117,7 @@ async function processCommand(axiosControlPlane, raw, extend) {
                     return cmdConstant.RESULT_NO_SUCH_PVE
                 }
                 const vmStatus = (await axiosPVE[cmds[1]].get(`/nodes/${cmds[2]}/qemu/${cmds[3]}/status/current`)).data.data
-                let vmInfo = `机器${cmds[1]}节点${cmds[2]}下的虚拟机${vmStatus.name}信息:\n`
+                let vmInfo = `集群${cmds[1]}节点${cmds[2]}下的虚拟机${vmStatus.name}信息:\n`
                     + `虚拟机名称: ${vmStatus.name} (${vmStatus.vmid})\n`
                     + `CPU: ${vmStatus.cpus}核\n`
                     + `内存: ${(vmStatus.maxmem / 1024 / 1024 / 1024).toFixed(2)}GB\n`

@@ -72,7 +72,14 @@ spec:
   selector:
     app: anywhere-door-plugin-pve
 ```
+## 使用方法
+### 获取配置参数
+![第1步](1.png)
+![第2步](2.png)
+![第3步](3.png)
+![第4步](4.png)
 
+### 注册插件
 1. 保证容器正常运行
 2. 注册plugin: POST AnywhereDoorManager/plugin/create & Header: token: token & Body: { "plugin_name": "name", "plugin_describe": "desc", "plugin_host": "anywhere-door-plugin-pve-service.anywhere-door", "plugin_port": 80, "plugin_token": "token" }
 3. 增加plugin配置信息: POST AnywhereDoorManager/config/create & Header: token: token & Body: [{"name": "pve name", "address": "https://pve.host:8006", "user": "admin user", "token": "token"}]
