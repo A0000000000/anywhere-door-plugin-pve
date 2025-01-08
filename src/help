@@ -9,4 +9,4 @@ PVE指令帮助:
 8. suspendVM [PVE] [Node] [VMID]: 指定PVE、指定Node、指定虚拟机挂起
 9. resumeVM [PVE] [Node] [VMID]: 指定PVE、指定Node、指定虚拟机恢复
 10. stopVM [PVE] [Node] [VMID]: 指定PVE、指定Node、指定虚拟机停止
-11. stopVM [PVE] [Node] [VMID]: 指定PVE、指定Node、指定虚拟机重启
+11. rebootVM [PVE] [Node] [VMID]: 指定PVE、指定Node、指定虚拟机重启
