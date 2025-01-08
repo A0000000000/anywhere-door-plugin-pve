@@ -132,6 +132,12 @@ async function processCommand(axiosControlPlane, raw, extend) {
                 }
                 return vmInfo
             case 'startVM':
+                if (cmds.length < 3) {
+                    return cmdConstant.RESULT_PARAMS_ERROR
+                }
+                if (!axiosPVE.hasOwnProperty(cmds[1])) {
+                    return cmdConstant.RESULT_NO_SUCH_PVE
+                }
                 const startResult = (await axiosPVE[cmds[1]].post(`/nodes/${cmds[2]}/qemu/${cmds[3]}/status/start`)).data.data
                 if (startResult) {
                     return cmdConstant.RESULT_SUCCESS
@@ -139,6 +145,12 @@ async function processCommand(axiosControlPlane, raw, extend) {
                     return cmdConstant.RESULT_UNKNOWN
                 }
             case 'shutdownVM':
+                if (cmds.length < 3) {
+                    return cmdConstant.RESULT_PARAMS_ERROR
+                }
+                if (!axiosPVE.hasOwnProperty(cmds[1])) {
+                    return cmdConstant.RESULT_NO_SUCH_PVE
+                }
                 const shutdownResult = (await axiosPVE[cmds[1]].post(`/nodes/${cmds[2]}/qemu/${cmds[3]}/status/shutdown`)).data.data
                 if (shutdownResult) {
                     return cmdConstant.RESULT_SUCCESS
@@ -146,6 +158,12 @@ async function processCommand(axiosControlPlane, raw, extend) {
                     return cmdConstant.RESULT_UNKNOWN
                 }
             case 'suspendVM':
+                if (cmds.length < 3) {
+                    return cmdConstant.RESULT_PARAMS_ERROR
+                }
+                if (!axiosPVE.hasOwnProperty(cmds[1])) {
+                    return cmdConstant.RESULT_NO_SUCH_PVE
+                }
                 const suspendResult = (await axiosPVE[cmds[1]].post(`/nodes/${cmds[2]}/qemu/${cmds[3]}/status/suspend`)).data.data
                 if (suspendResult) {
                     return cmdConstant.RESULT_SUCCESS
@@ -153,6 +171,12 @@ async function processCommand(axiosControlPlane, raw, extend) {
                     return cmdConstant.RESULT_UNKNOWN
                 }
             case 'resumeVM':
+                if (cmds.length < 3) {
+                    return cmdConstant.RESULT_PARAMS_ERROR
+                }
+                if (!axiosPVE.hasOwnProperty(cmds[1])) {
+                    return cmdConstant.RESULT_NO_SUCH_PVE
+                }
                 const resumeResult = (await axiosPVE[cmds[1]].post(`/nodes/${cmds[2]}/qemu/${cmds[3]}/status/resume`)).data.data
                 if (resumeResult) {
                     return cmdConstant.RESULT_SUCCESS
@@ -160,8 +184,27 @@ async function processCommand(axiosControlPlane, raw, extend) {
                     return cmdConstant.RESULT_UNKNOWN
                 }
             case 'stopVM':
+                if (cmds.length < 3) {
+                    return cmdConstant.RESULT_PARAMS_ERROR
+                }
+                if (!axiosPVE.hasOwnProperty(cmds[1])) {
+                    return cmdConstant.RESULT_NO_SUCH_PVE
+                }
                 const stopResult = (await axiosPVE[cmds[1]].post(`/nodes/${cmds[2]}/qemu/${cmds[3]}/status/stop`)).data.data
                 if (stopResult) {
+                    return cmdConstant.RESULT_SUCCESS
+                } else {
+                    return cmdConstant.RESULT_UNKNOWN
+                }
+            case 'rebootVM':
+                if (cmds.length < 3) {
+                    return cmdConstant.RESULT_PARAMS_ERROR
+                }
+                if (!axiosPVE.hasOwnProperty(cmds[1])) {
+                    return cmdConstant.RESULT_NO_SUCH_PVE
+                }
+                const rebootResult = (await axiosPVE[cmds[1]].post(`/nodes/${cmds[2]}/qemu/${cmds[3]}/status/reboot`)).data.data
+                if (rebootResult) {
                     return cmdConstant.RESULT_SUCCESS
                 } else {
                     return cmdConstant.RESULT_UNKNOWN
