@@ -45,6 +45,22 @@ async function sendRequest(pluginName, target, data, extend) {
     })
 }
 
+function registerPlugin(axiosControlPlane, params) {
+    axiosControlPlane.post(constant.PLUGIN_REGISTER_URL, params).then(resp => {
+        const data = resp.data
+        if (data.code === -10) {
+            // 用户不存在，10s后重试注册
+            setTimeout(() => {
+                registerPlugin(axiosControlPlane, params)
+            }, 10000)
+        } else {
+            console.log(data)
+        }
+    }).catch(error => {
+        console.error(error)
+    })
+}
+
 function main() {
     const host = process.env.HOST
     const port = process.env.PORT
@@ -52,6 +68,9 @@ function main() {
     const username = process.env.USERNAME
     const token = process.env.TOKEN
     const pluginName = process.env.PLUGIN_NAME
+    const selfHost = process.env.SELF_HOST
+    const selfPort = constant.PORT
+    const selfPrefix = process.env.SELF_PREFIX || ''
 
     const axiosControlPlane = axios.create({
         baseURL: constant.CONTROL_PLANE_BASE_REQUEST_URL(host, port, prefix),
@@ -59,6 +78,14 @@ function main() {
             token, username
         }
     })
+
+    registerPlugin(axiosControlPlane, {
+        name: pluginName,
+        host: selfHost,
+        port: selfPort,
+        prefix: selfPrefix,
+    })
+
     const logCtx = new LogContext(axiosControlPlane, pluginName)
 
     const app = new Koa()
@@ -91,14 +118,14 @@ function main() {
                 sendRequest(pluginName, name, data, extend).then(res => {
                     console.log(res)
                 }).catch(err => {
-                    console.log(err)
+                    console.error(err)
                 })
             }).catch(err => {
-                console.log(err)
+                console.error(err)
                 sendRequest(pluginName, name, err.message, extend).then(res => {
                     console.log(res)
                 }).catch(err => {
-                    console.log(err)
+                    console.error(err)
                 })
             })
             ctx.response.body = JSON.stringify({
@@ -108,7 +135,7 @@ function main() {
         })
     })
     app.use(router.routes()).use(router.allowedMethods())
-    app.listen(80)
+    app.listen(constant.PORT)
 }
 
 main()
