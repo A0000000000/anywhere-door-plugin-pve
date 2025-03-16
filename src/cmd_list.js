@@ -1,6 +1,46 @@
 import cmdConstant from './cmd_constant.js'
 import fs from 'fs'
 
+const session = {
+
+}
+
+let currentSession = ''
+
+function processCmds(cmds) {
+    if (cmds.length < 1) {
+        return cmds
+    }
+    if (currentSession === '' || !(currentSession in session)) {
+        return cmds
+    }
+    const currentConfig = session[currentSession]
+    const resultArr = []
+    resultArr.push(cmds[0])
+    if ('pve' in currentConfig) {
+        resultArr.push(currentConfig['pve'])
+    } else {
+        if (cmds.length > 2) {
+            resultArr.push(cmds[1])
+        }
+    }
+    if ('node' in currentConfig) {
+        resultArr.push(currentConfig['node'])
+    } else {
+        if (cmds.length > 3) {
+            resultArr.push(cmds[2])
+        }
+    }
+    if ('vmid' in currentConfig) {
+        resultArr.push(currentConfig['vmid'])
+    } else {
+        if (cmds.length > 4) {
+            resultArr.push(cmds[3])
+        }
+    }
+    return resultArr
+}
+
 export default {
     'help': async function (configs, cmds, axiosPVE) {
         return await new Promise((resolve, reject) => {
@@ -13,6 +53,52 @@ export default {
             })
         })
     },
+    'createSession': async function (configs, cmds, axiosPVE) {
+        if (cmds.length > 2) {
+            session[cmds[1]] = {}
+        }
+        if (cmds.length > 3) {
+            session[cmds[1]]['pve'] = cmds[2]
+        }
+        if (cmds.length > 4) {
+            session[cmds[1]]['node'] = cmds[3]
+        }
+        if (cmds.length > 5) {
+            session[cmds[1]]['vmid'] = cmds[4]
+        }
+        return cmdConstant.RESULT_SUCCESS
+    },
+    'removeSession': async function (configs, cmds, axiosPVE) {
+        if (cmds.length > 2) {
+            if (cmds[1] in session) {
+                delete session[cmds[1]]
+            }
+            return cmdConstant.RESULT_SUCCESS
+        }
+        return cmdConstant.RESULT_PARAMS_ERROR
+    },
+    'listSession': async function (configs, cmds, axiosPVE) {
+        let sessionList = '会话列表:'
+        for (const key in session) {
+            sessionList = sessionList + '\n' + `key: '${key}', session: '${JSON.stringify(session[key])}'`
+        }
+        return sessionList
+    },
+    'useSession': async function (configs, cmds, axiosPVE) {
+        if (cmds.length < 2) {
+            currentSession = ''
+            return cmdConstant.RESULT_SUCCESS
+        }
+        if (cmds[1] in session) {
+            currentSession = cmds[1]
+        } else {
+            currentSession = ''
+        }
+        return cmdConstant.RESULT_SUCCESS
+    },
+    'getCurrentSession': async function (configs, cmds, axiosPVE) {
+        return `Current Session is ${currentSession}`
+    },
     'getPVEList': async function (configs, cmds, axiosPVE) {
         let machineList = '集群列表:'
         for (const i in configs) {
@@ -21,6 +107,7 @@ export default {
         return machineList
     },
     'getNodes': async function (configs, cmds, axiosPVE) {
+        cmds = processCmds(cmds)
         if (cmds.length < 2) {
             return cmdConstant.RESULT_PARAMS_ERROR
         }
@@ -35,30 +122,13 @@ export default {
         return nodeListInfo
     },
     'getNodeInfo': async function (configs, cmds, axiosPVE) {
+        cmds = processCmds(cmds)
         if (cmds.length < 3) {
             return cmdConstant.RESULT_PARAMS_ERROR
         }
         if (!axiosPVE.hasOwnProperty(cmds[1])) {
             return cmdConstant.RESULT_NO_SUCH_PVE
         }
-        /*
-        nodesData = (await axiosPVE[cmds[1]].get('/nodes')).data.data
-        for (const i in nodesData) {
-            const nodeData = nodesData[i]
-            if (nodeData.node === cmds[2]) {
-                return `集群${cmds[1]}节点${cmds[2]}信息:\n`
-                    + `节点名: ${nodeData.node}\n`
-                    + `CPU核心数: ${nodeData.maxcpu}\n`
-                    + `CPU使用率: ${(nodeData.cpu * 100).toFixed(2)}%\n`
-                    + `内存容量: ${(nodeData.maxmem / 1024 / 1024 / 1024).toFixed(2)}GB\n`
-                    + `已用内存: ${(nodeData.mem / 1024 / 1024 / 1024).toFixed(2)}GB\n`
-                    + `local磁盘大小: ${(nodeData.maxdisk / 1024 / 1024 / 1024).toFixed(2)}GB\n`
-                    + `local磁盘已用: ${(nodeData.disk / 1024 / 1024 / 1024).toFixed(2)}GB\n`
-                    + `节点状态: ${nodeData.status}\n`
-                    + `已开机时间: ${(nodeData.uptime / 60 / 60 / 24).toFixed(2)}天`
-            }
-        }
-        */
         const nodeInfo = (await axiosPVE[cmds[1]].get(`/nodes/${cmds[2]}/status`)).data.data
         if (nodeInfo) {
             return `集群${cmds[1]}节点${cmds[2]}信息:\n`
@@ -73,6 +143,7 @@ export default {
         return cmdConstant.RESULT_NO_SUCH_NODE
     },
     'getVMs': async function (configs, cmds, axiosPVE) {
+        cmds = processCmds(cmds)
         if (cmds.length < 3) {
             return cmdConstant.RESULT_PARAMS_ERROR
         }
@@ -88,6 +159,7 @@ export default {
         return vmListInfo
     },
     'getVMInfo': async function (configs, cmds, axiosPVE) {
+        cmds = processCmds(cmds)
         if (cmds.length < 3) {
             return cmdConstant.RESULT_PARAMS_ERROR
         }
@@ -111,6 +183,7 @@ export default {
         return vmInfo
     },
     'startVM': async function (configs, cmds, axiosPVE) {
+        cmds = processCmds(cmds)
         if (cmds.length < 3) {
             return cmdConstant.RESULT_PARAMS_ERROR
         }
@@ -125,6 +198,7 @@ export default {
         }
     },
     'shutdownVM': async function (configs, cmds, axiosPVE) {
+        cmds = processCmds(cmds)
         if (cmds.length < 3) {
             return cmdConstant.RESULT_PARAMS_ERROR
         }
@@ -139,6 +213,7 @@ export default {
         }
     },
     'suspendVM': async function (configs, cmds, axiosPVE) {
+        cmds = processCmds(cmds)
         if (cmds.length < 3) {
             return cmdConstant.RESULT_PARAMS_ERROR
         }
@@ -153,6 +228,7 @@ export default {
         }
     },
     'resumeVM': async function (configs, cmds, axiosPVE) {
+        cmds = processCmds(cmds)
         if (cmds.length < 3) {
             return cmdConstant.RESULT_PARAMS_ERROR
         }
@@ -167,6 +243,7 @@ export default {
         }
     },
     'stopVM': async function (configs, cmds, axiosPVE) {
+        cmds = processCmds(cmds)
         if (cmds.length < 3) {
             return cmdConstant.RESULT_PARAMS_ERROR
         }
@@ -181,6 +258,7 @@ export default {
         }
     },
     'rebootVM': async function (configs, cmds, axiosPVE) {
+        cmds = processCmds(cmds)
         if (cmds.length < 3) {
             return cmdConstant.RESULT_PARAMS_ERROR
         }
