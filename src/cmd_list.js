@@ -17,21 +17,21 @@ function processCmds(cmds) {
     const currentConfig = session[currentSession]
     const resultArr = []
     resultArr.push(cmds[0])
-    if (cmds.length > 2) {
+    if (cmds.length >= 2) {
         resultArr.push(cmds[1])
     } else {
         if ('pve' in currentConfig) {
             resultArr.push(currentConfig['pve'])
         }
     }
-    if (cmds.length > 3) {
+    if (cmds.length >= 3) {
         resultArr.push(cmds[2])
     } else {
         if ('node' in currentConfig) {
             resultArr.push(currentConfig['node'])
         }
     }
-    if (cmds.length > 4) {
+    if (cmds.length >= 4) {
         resultArr.push(cmds[3])
     } else {
         if ('vmid' in currentConfig) {
