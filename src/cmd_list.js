@@ -54,16 +54,16 @@ export default {
         })
     },
     'createSession': async function (configs, cmds, axiosPVE) {
-        if (cmds.length > 2) {
+        if (cmds.length >= 2) {
             session[cmds[1]] = {}
         }
-        if (cmds.length > 3) {
+        if (cmds.length >= 3) {
             session[cmds[1]]['pve'] = cmds[2]
         }
-        if (cmds.length > 4) {
+        if (cmds.length >= 4) {
             session[cmds[1]]['node'] = cmds[3]
         }
-        if (cmds.length > 5) {
+        if (cmds.length >= 5) {
             session[cmds[1]]['vmid'] = cmds[4]
         }
         return cmdConstant.RESULT_SUCCESS
